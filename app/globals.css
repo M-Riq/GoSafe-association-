@@ -1,26 +1,607 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ------------------------------------------------------------------
+   GOSAFE design tokens
+   Palette: 50% white · 30% blue · 10% orange · 10% green.
+   The default Tailwind palette is reset so only brand colors exist.
+------------------------------------------------------------------- */
+@theme {
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* Neutrals derived from the brand blue */
+  --color-ink: #0a1a33;
+  --color-muted: #46566f;
+  --color-subtle: #64738b;
+  --color-line: #dde4ee;
+  --color-surface: #f4f7fb;
+
+  /* Blue — primary brand (30%) */
+  --color-navy-950: #04132e;
+  --color-navy-900: #071f47;
+  --color-navy-800: #0b2c63;
+  --color-brand-700: #0f3f8c;
+  --color-brand-600: #1652b8;
+  --color-brand-500: #2a6ae0;
+  --color-brand-300: #8db2f2;
+  --color-brand-100: #e3ecfb;
+  --color-brand-50: #f1f5fd;
+  --color-cobalt: #0047ab;
+
+  /* Orange — accent (10%) */
+  --color-accent-500: #f26b1d;
+  --color-accent-600: #d4570f;
+  --color-accent-700: #a8430a;
+  --color-accent-100: #fde8da;
+
+  /* Green — secondary accent (10%) */
+  --color-safe-400: #3ccb83;
+  --color-safe-500: #1fa463;
+  --color-safe-700: #13744a;
+  --color-safe-100: #ddf3e8;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
+
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@utility shell {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@utility section-y {
+  padding-block: clamp(5rem, 10vw, 9rem);
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ------------------------------------------------------------------
+   Base
+------------------------------------------------------------------- */
+@layer base {
+  html {
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    background: var(--color-white);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-accent-500);
+    color: var(--color-navy-950);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent-500);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Motion system
+   Timing: 600–900ms entrances, 200–300ms interactions, ease-premium.
+------------------------------------------------------------------- */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.5rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes word-in {
+  from {
+    transform: translate3d(0, 110%, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes lane-flow {
+  from {
+    transform: translate3d(0, -96px, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+@keyframes pulse-ring {
+  from {
+    opacity: 0.7;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}
+
+@keyframes dash-flow {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Hero entrance (runs on load, no JS) */
+.hero-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.hero-word > span {
+  display: inline-block;
+  animation: word-in 1s var(--ease-premium) both;
+  animation-delay: calc(150ms + var(--i, 0) * 70ms);
+}
+
+.hero-rise {
+  animation: rise 0.9s var(--ease-premium) both;
+  animation-delay: var(--d, 0ms);
+}
+
+.hero-fade {
+  animation: fade 1.6s var(--ease-soft) both;
+  animation-delay: var(--d, 0ms);
+}
+
+/* Perspective road — --horizon is shared with the skyline so both meet at the vanishing point */
+.hero-stage {
+  --horizon: 30%;
+}
+
+.road-scene {
+  perspective: 340px;
+  perspective-origin: 50% var(--horizon);
+  mask-image: linear-gradient(
+    to bottom,
+    transparent var(--horizon),
+    #000 calc(var(--horizon) + 9%),
+    #000 100%
+  );
+}
+
+.road-plane {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 320%;
+  height: 600%;
+  transform: translateX(-50%) rotateX(80deg);
+  transform-origin: 50% 100%;
+  overflow: hidden;
+}
+
+/* Patterns repeat every 96px so a one-period translation loops seamlessly */
+.road-flow {
+  position: absolute;
+  inset: -96px 0 0 0;
+  will-change: transform;
+  animation: lane-flow 1.4s linear infinite;
+}
+
+.road-grid {
+  background-image:
+    linear-gradient(to right, rgb(141 178 242 / 0.2) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(141 178 242 / 0.2) 1px, transparent 1px);
+  background-size: 96px 96px;
+  background-position: center top;
+}
+
+.road-lanes {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 0.85) 0 46px,
+    transparent 46px 96px
+  );
+  background-size: 6px 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.float-slow {
+  animation: float-y 7s var(--ease-soft) infinite;
+  animation-delay: var(--d, 0ms);
+}
+
+.pulse-ring {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: pulse-ring 2.8s var(--ease-soft) infinite;
+  animation-delay: var(--d, 0ms);
+}
+
+.flow-line {
+  stroke-dasharray: 4 8;
+  animation: dash-flow 1.6s linear infinite;
+}
+
+/* Hero car: drives in once, then keeps a subtle road vibration and lane sway */
+@keyframes car-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 35%, 0) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes car-sway {
+  0%,
+  100% {
+    transform: translate3d(-10px, 0, 0) rotate(-0.4deg);
+  }
+  50% {
+    transform: translate3d(10px, 0, 0) rotate(0.4deg);
+  }
+}
+
+@keyframes car-bob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -1.5px, 0);
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+.car-in {
+  animation: car-in 1.6s var(--ease-premium) 0.5s both;
+}
+
+.car-sway {
+  animation: car-sway 9s var(--ease-soft) infinite;
+}
+
+.car-bob {
+  animation: car-bob 0.42s linear infinite;
+}
+
+.car-glow {
+  animation: glow-pulse 2.6s var(--ease-soft) infinite;
+}
+
+.twinkle {
+  animation: twinkle 5s var(--ease-soft) infinite;
+  animation-delay: var(--d, 0ms);
+}
+
+/* Expertise: hovering a cluster card highlights its node in the diagram */
+.expertise-node {
+  transform: translate(-50%, -50%);
+  transition:
+    transform 0.4s var(--ease-premium),
+    background-color 0.3s,
+    color 0.3s,
+    border-color 0.3s;
+}
+.expertise:has([data-cluster="0"]:hover) .expertise-node[data-node="0"],
+.expertise:has([data-cluster="1"]:hover) .expertise-node[data-node="1"],
+.expertise:has([data-cluster="2"]:hover) .expertise-node[data-node="2"],
+.expertise:has([data-cluster="3"]:hover) .expertise-node[data-node="3"],
+.expertise:has([data-cluster="4"]:hover) .expertise-node[data-node="4"] {
+  transform: translate(-50%, -50%) scale(1.12);
+  background-color: var(--color-accent-500);
+  border-color: var(--color-accent-500);
+  color: var(--color-navy-950);
+}
+
+/* Gallery */
+@keyframes gallery-swap {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.25rem, 0);
+  }
+}
+@keyframes gallery-backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes gallery-caption-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.5rem, 0);
+  }
+}
+.gallery-swap {
+  animation: gallery-swap 0.8s var(--ease-premium) both;
+}
+.gallery-fade {
+  mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+}
+.gallery-lightbox::backdrop {
+  background: rgb(4 19 46 / 0.88);
+  backdrop-filter: blur(8px);
+  animation: gallery-backdrop-in 0.5s var(--ease-premium);
+  transition: opacity 0.45s var(--ease-premium);
+}
+.gallery-lightbox[data-closing]::backdrop {
+  opacity: 0;
+}
+.gallery-lightbox .gallery-caption {
+  animation: gallery-caption-in 0.6s var(--ease-premium) 0.25s both;
+  transition: opacity 0.25s;
+}
+.gallery-lightbox[data-closing] .gallery-caption {
+  opacity: 0;
+}
+html:has(.gallery-lightbox[open]),
+html:has(.partners-dialog[open]) {
+  overflow: hidden;
+}
+
+/* Partners: auto-scroll only below md, where the four logos can't all fit */
+@keyframes partners-marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+@keyframes partners-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translate3d(0, 1rem, 0);
+  }
+}
+@media (width < 48rem) {
+  .partners-track {
+    animation: partners-marquee 22s linear infinite;
+  }
+  .partners-viewport {
+    mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  }
+}
+.partners[data-paused] .partners-track,
+.partners-viewport:hover .partners-track,
+.partners-viewport:focus-within .partners-track,
+[data-offscreen] .partners-track {
+  animation-play-state: paused;
+}
+.partners-dialog[open] {
+  animation: partners-pop 0.5s var(--ease-premium);
+}
+.partners-dialog::backdrop {
+  background: rgb(4 19 46 / 0.75);
+  backdrop-filter: blur(6px);
+  animation: gallery-backdrop-in 0.4s var(--ease-premium);
+}
+
+/* Pause infinite decorative motion while off-screen */
+[data-offscreen] .road-flow,
+[data-offscreen] .float-slow,
+[data-offscreen] .pulse-ring,
+[data-offscreen] .car-sway,
+[data-offscreen] .car-bob,
+[data-offscreen] .car-glow,
+[data-offscreen] .twinkle,
+[data-offscreen] .flow-line {
+  animation-play-state: paused;
+}
+
+/* Hero scroll transformation (progressive enhancement) */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) and (min-width: 1024px) {
+    @keyframes hero-out {
+      to {
+        opacity: 0;
+        transform: translate3d(0, -12vh, 0) scale(0.98);
+      }
+    }
+    @keyframes hero-visual-out {
+      to {
+        transform: translate3d(0, -6vh, 0) scale(1.05);
+      }
+    }
+    .hero-scroll-content {
+      animation: hero-out linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 80vh;
+    }
+    .hero-scroll-visual {
+      transform-origin: 50% 100%;
+      animation: hero-visual-out linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100vh;
+    }
+  }
+}
+
+/* Scroll reveal — hidden only when JS can reveal it again */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  [data-reveal] {
+    opacity: 0;
+    transform: translate3d(0, 1.75rem, 0);
+    transition:
+      opacity 0.8s var(--ease-premium),
+      transform 0.9s var(--ease-premium);
+    transition-delay: var(--d, 0ms);
+  }
+  [data-reveal="fade"] {
+    transform: none;
+  }
+  [data-reveal="scale"] {
+    transform: scale(0.96);
+  }
+  [data-reveal="clip"] {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 1.1s var(--ease-premium);
+    transition-delay: var(--d, 0ms);
+  }
+  [data-reveal][data-revealed] {
+    opacity: 1;
+    transform: none;
+  }
+  [data-reveal="clip"][data-revealed] {
+    clip-path: inset(0 0 0 0);
+  }
+
+  /* Children staggered via --d once their parent is revealed */
+  [data-reveal] .reveal-child {
+    opacity: 0;
+    transform: translate3d(0, 0.75rem, 0);
+    transition:
+      opacity 0.7s var(--ease-premium),
+      transform 0.8s var(--ease-premium);
+    transition-delay: var(--d, 0ms);
+  }
+  [data-reveal] .reveal-bar,
+  [data-reveal] .reveal-bar-y {
+    transform: scaleX(0);
+    transition: transform 1.2s var(--ease-premium);
+    transition-delay: var(--d, 0ms);
+  }
+  [data-reveal] .reveal-bar-y {
+    transform: scaleY(0);
+  }
+  [data-reveal][data-revealed] .reveal-child,
+  [data-reveal][data-revealed] .reveal-bar,
+  [data-reveal][data-revealed] .reveal-bar-y {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Images settle from a slight zoom when revealed */
+  [data-reveal] .reveal-zoom {
+    transform: scale(1.08);
+    transition: transform 1.6s var(--ease-premium);
+    transition-delay: var(--d, 0ms);
+  }
+  [data-reveal][data-revealed] .reveal-zoom {
+    transform: none;
+  }
+
+  /* SVG strokes that draw themselves when revealed */
+  [data-reveal] .draw-path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  [data-reveal][data-revealed] .draw-path {
+    animation: draw 2.2s var(--ease-soft) forwards;
+    animation-delay: var(--draw-d, 200ms);
+  }
+}
+
+/* Reduced motion: keep content, remove non-essential motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+  .road-flow,
+  .float-slow,
+  .pulse-ring,
+  .car-sway,
+  .car-bob,
+  .car-glow,
+  .twinkle,
+  .flow-line {
+    animation: none !important;
+  }
+  .gallery-viewport {
+    overflow-x: auto;
+  }
+  .partners-track {
+    animation: none !important;
+  }
+  .partners-viewport {
+    overflow-x: auto;
+  }
 }
