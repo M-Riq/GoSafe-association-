@@ -3,6 +3,9 @@
  * Source of truth: "GOSAFE ASSOCIATION.md". Do not add facts that are not in that document.
  */
 
+/** Production domain: canonical URLs, share previews and sitemap are built from it. */
+export const siteUrl = "https://gosafe-association.org";
+
 /** Real coordinates of Yaoundé (headquarters). */
 export const headquartersCoords = { lat: 3.87, lon: 11.52 } as const;
 
@@ -32,7 +35,7 @@ export const contactChannels = {
   // Labels are in the dictionaries (`contact.phoneLabels`), in the same order.
   phones: [
     // { value: "+237 6 00 00 00 00", href: "tel:+237600000000" },
-    { value: "+237 673 72 12 04", href: "tel:+2376673721204" },
+    { value: "+237 673 72 12 04", href: "tel:+237673721204" },
   ],
   socials: [
     {

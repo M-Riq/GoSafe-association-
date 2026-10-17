@@ -17,6 +17,7 @@ import { Statistics } from "@/components/statistics/Statistics";
 import { MotionObserver } from "@/components/ui/MotionObserver";
 import { SectionDivider } from "@/components/ui/SectionDivider";
 import { getDictionary } from "@/content";
+import { contactChannels, siteUrl } from "@/content/gosafe";
 import { hasLocale } from "@/lib/i18n";
 
 export default async function Home({ params }: PageProps<"/[lang]">) {
@@ -24,8 +25,28 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
   if (!hasLocale(lang)) notFound();
   const t = getDictionary(lang);
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "NGO",
+    name: t.organization.name,
+    url: `${siteUrl}/${lang}`,
+    logo: `${siteUrl}/logo2.png`,
+    slogan: t.organization.tagline,
+    description: t.meta.description,
+    foundingDate: t.organization.founded,
+    address: { "@type": "PostalAddress", addressLocality: "Yaoundé", addressCountry: "CM" },
+    areaServed: t.organization.interventionArea,
+    telephone: contactChannels.phones[0].href.replace("tel:", ""),
+    sameAs: [contactChannels.socials.find((s) => s.platform === "facebook")!.href],
+    inLanguage: lang,
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }}
+      />
       <a
         href="#contenu"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-white focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-navy-900"
