@@ -1,7 +1,8 @@
 import path from "node:path";
-import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+// Plain JS on purpose: hosts without native SWC (old glibc, e.g. Hostinger) cannot load next.config.ts.
+/** @type {import("next").NextConfig} */
+const nextConfig = {
   // The git repo root is this folder; without it Turbopack picks up the parent lockfile.
   turbopack: { root: path.resolve(".") },
   poweredByHeader: false,
